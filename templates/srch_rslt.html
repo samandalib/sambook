@@ -5,16 +5,28 @@
   <div class="grid">
 
     <div class="row">
-      <div class= "col-lg-3 col-sm-3">
-        <p style = "font-size:18px; color:gray"> <strong>{{user}}</strong> </p>
+
+      <div class= "col-lg-1 col-sm-1">
+        <a style="font-size: 18px; align: right " href="{{url_for('search')}}">Back</a>
       </div>
+
+      <div class= "col-lg-3 col-sm-3">
+        <p style = "font-size:12px; color:gray"> <strong>{{user}}</strong> this is the result for your search entires</p>
+      </div>
+
       <div class= "col-lg-6">
       </div>
-      <div class= "col-lg-3 col-sm-3">
-        <a style="font-size: 18px; align: right " href="{{url_for('index')}}">                  Log Out</a>
-        <a style="font-size: 18px; align: right " href="{{url_for('search')}}">     Back</a>
+
+      <div class= "col-lg-1 col-sm-1">
       </div>
+
+      <div class= "col-lg-1 col-sm-1">
+        <a style="font-size: 18px; align: right " href="{{url_for('logout')}}">Log Out</a>
+      </div>
+
     </div>
+  </div>
+</div>
 <!--=======================================================================================================-->
 
 <table class="table table-hover">
