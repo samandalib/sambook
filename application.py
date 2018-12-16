@@ -5,7 +5,6 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import generate_password_hash, check_password_hash
-from User import user
 
 app = Flask(__name__)
 
@@ -50,9 +49,6 @@ def index():
     
 
 
-#@app.route('/siupform')
-#def siupform():
-#    render_template('signup.html')
 
 @app.route('/signup', methods = ["GET","POST"])
 def signup():
@@ -135,11 +131,10 @@ def logout():
 
 @app.route('/book')
 def book():
+    '''
+    ready for each book's page
+    '''
     return render_template('book.html')
-
-@app.route('/rgstr')
-def rgstr_user():
-        return render_template('rgstr.html')
 
         
 if __name__ == "__main__":
