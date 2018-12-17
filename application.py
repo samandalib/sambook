@@ -39,7 +39,9 @@ def index():
             return render_template("error.html", message="Your Username is Invalid", username=username)
          else:
              db_pass = (db.execute("SELECT password FROM readers WHERE username=:username", {"username":username}).fetchone())[0]
-             if db_pass == password :
+ 
+#       To check if the password entere by the user is compatible with the password Hash in database:
+             if check_password_hash(db_pass, password) :
                      session['user'] = username
                      return redirect(url_for('search'))
              
@@ -67,7 +69,7 @@ def signup():
             
     
             # hash the password
-    #        password = generate_password_hash(password)
+            password = generate_password_hash(password)
             
             db.execute("INSERT INTO readers (username,password,email) VALUES (:username, :password, :email)", {'username':username, 'password':password, 'email':email})
             db.commit()
@@ -101,7 +103,7 @@ def search():
                 author = request.form ['author']
                           
                 if isbn == "" and title == "":
-                    book_list = db.execute("SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
+                    book_list = db.execute("SELECT * FROM books WHERE author ILIKE :author",{"author":author}).fetchall()
                     return render_template('srch_rslt.html', book_list = book_list, user=username)
                 elif isbn == "" and author == "":
                     book_list = db.execute("SELECT * FROM books WHERE title = :title", {"title": title}).fetchall()
@@ -136,6 +138,9 @@ def book():
     '''
     return render_template('book.html')
 
+@app.route('/rgstr')
+def rgstr_user():
+        return render_template('rgstr.html')
         
 if __name__ == "__main__":
    app.run()
