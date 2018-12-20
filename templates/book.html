@@ -3,6 +3,29 @@
 {% block title %}
 book
 {% endblock %}
+<div class="container-fluid">
+  <div class="grid">
 
+    <div class="row">
+
+      <div class= "col-lg-3 col-sm-3">
+        <p style = "font-size:18px; color:gray"><strong>{{user}}</strong> </p>
+      </div>
+
+      <div class= "col-lg-6">
+      </div>
+
+      <div class= "col-lg-3 col-sm-3">
+        <a style="font-size: 18px; align: right " href="{{url_for('logout')}}">Log Out</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--=======================================================================================================-->
+title, author, publication year, ISBN number, and any reviews that users have left for the book on your website.
+{{book.title}}
+{{book.author}}
+{{book.isbn}}
 {% block body %}
 {% endblock %}

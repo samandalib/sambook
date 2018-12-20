@@ -103,7 +103,7 @@ def search():
                 author = request.form ['author']
                           
                 if isbn == "" and title == "":
-                    book_list = db.execute("SELECT * FROM books WHERE author ILIKE :author",{"author":author}).fetchall()
+                    book_list = db.execute("SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
                     return render_template('srch_rslt.html', book_list = book_list, user=username)
                 elif isbn == "" and author == "":
                     book_list = db.execute("SELECT * FROM books WHERE title = :title", {"title": title}).fetchall()
