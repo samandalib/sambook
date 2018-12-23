@@ -104,16 +104,16 @@ def search():
                           
                 if isbn == "" and title == "":
                     book_list = db.execute("SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
-                    return render_template('srch_rslt.html', book_list = book_list, user=username)
+                    return books(book_list)
                 elif isbn == "" and author == "":
                     book_list = db.execute("SELECT * FROM books WHERE title = :title", {"title": title}).fetchall()
-                    return render_template('srch_rslt.html', book_list = book_list, user=username)
+                    return books(book_list)
                 elif author == "" and title == "":
                     book_list = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
-                    return render_template('srch_rslt.html', book_list = book_list, user=username)
+                    return books(book_list)
                 else:
                     book_list = db.execute("SELECT * FROM books WHERE (isbn, title, author) VALUES (:isbn, :title, :author)", {"isbn": isbn, "title": title, "author":author}).fetchall()
-                    return render_template('srch_rslt.html', book_list = book_list, user=username)
+                    return books(book_list)
             except:
                 return render_template("errorsrch.html", message="No Search result", username=username)
         
@@ -132,11 +132,14 @@ def logout():
         return render_template('logout.html')
 
 @app.route('/book')
-def book():
+def books(book_list):
     '''
     ready for each book's page
     '''
-    return render_template('book.html')
+    username = session['user']
+    return render_template('srch_rslt.html', book_list = book_list, user=username)
+    
+#    return render_template('book.html')
 
 @app.route('/rgstr')
 def rgstr_user():

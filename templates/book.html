@@ -3,6 +3,8 @@
 {% block title %}
 book
 {% endblock %}
+
+{% block body %}
 <div class="container-fluid">
   <div class="grid">
 
@@ -24,8 +26,10 @@ book
 </div>
 <!--=======================================================================================================-->
 title, author, publication year, ISBN number, and any reviews that users have left for the book on your website.
-{{book.title}}
-{{book.author}}
-{{book.isbn}}
-{% block body %}
+  <ul>
+    <li><strong>ISBN</strong>: {{book.isbn}}</li>
+    <li><strong>Title</strong>: {{book.title}}</li>
+    <li><strong>Author</strong>: {{book.author}}</li>
+    <li><strong>Year</strong>: {{book.year}}</li>
+  </ul>
 {% endblock %}
