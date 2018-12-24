@@ -102,7 +102,7 @@ def search():
                 title = request.form['title']
                 author = request.form ['author']
                           
-                if isbn == "" and title == "":
+                if isbn == "" and title == "":    
                     book_list = db.execute("SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
                     return books(book_list)
                 elif isbn == "" and author == "":
@@ -131,15 +131,24 @@ def logout():
         session.pop('user')
         return render_template('logout.html')
 
-@app.route('/book')
+@app.route('/books')
 def books(book_list):
     '''
-    ready for each book's page
+    this function takes the book_list from the search function and returns the search results in the html page
     '''
     username = session['user']
     return render_template('srch_rslt.html', book_list = book_list, user=username)
+  
+@app.route('/books/<int:book_id>')
+def book(book_id):
+    '''
+    this function has a close tight with the srch_rslt.html file and gets the book_id from the Jinja code within that file and returns a page for each book_id. 
+    '''
+    username = session['user']
+    book = db.execute("SELECT * FROM books WHERE book_id = :id",{"id":book_id}).fetchone()
     
-#    return render_template('book.html')
+    user_id = db.execute("SELECT user_id FROM readers)
+    return render_template('book.html', book = book, user = username)
 
 @app.route('/rgstr')
 def rgstr_user():
