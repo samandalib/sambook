@@ -138,17 +138,48 @@ def books(book_list):
     '''
     username = session['user']
     return render_template('srch_rslt.html', book_list = book_list, user=username)
+
   
-@app.route('/books/<int:book_id>')
+@app.route('/books/<int:book_id>', methods=['GET','POST'])
 def book(book_id):
     '''
     this function has a close tight with the srch_rslt.html file and gets the book_id from the Jinja code within that file and returns a page for each book_id. 
     '''
-    username = session['user']
     book = db.execute("SELECT * FROM books WHERE book_id = :id",{"id":book_id}).fetchone()
     
-    user_id = db.execute("SELECT user_id FROM readers)
-    return render_template('book.html', book = book, user = username)
+    reviews = db.execute("SELECT * FROM activity LEFT JOIN readers ON activity.reader_id=readers.reader_id WHERE book_id = :book_id LIMIT 5",{'book_id':book_id}).fetchall()
+
+    if 'user' in session:
+        username = session['user']
+        reader_id = db.execute("SELECT reader_id FROM readers WHERE username=:username",{"username":username}).fetchone()
+        reader_id = reader_id[0]
+    
+        #To see if the user put a review on the book 
+        if len(db.execute("SELECT rating,comment FROM activity LEFT JOIN readers ON activity.reader_id=readers.reader_id WHERE username = :username AND book_id = :book_id",{'username':username, 'book_id':book_id}).fetchall())>0:
+            user_review = 1
+        else:
+            user_review = 0
+        # =============================================    
+        
+        if request.method == 'POST':
+            if db.execute("SELECT * FROM activity WHERE reader_id=:reader_id AND book_id=:book_id", {"reader_id":reader_id, "book_id":book_id}).rowcount != 0:
+                return render_template("error.html", message="You have already left a review for this book", username = username)
+            else:
+                try:  
+                    comment = request.form['comment']
+                    rating = request.form['rating']
+                    db.execute("INSERT INTO activity(reader_id, book_id, rating, comment) VALUES (:reader_id, :book_id, :rating, :comment)",{'reader_id':reader_id, 'book_id':book_id, 'rating':rating, 'comment':comment})
+                    db.commit()
+                    return render_template('suc_rvw.html', user = username, rating = rating, comment = comment)
+                except:
+                    return render_template("error.html", message="Your request cannot be handled", username = username, comment = comment, rating = rating, reader_id= reader_id, book_id= book_id)
+                    
+        return render_template('book.html', book = book, user = username, reviews = reviews, user_review = user_review)                
+   
+    else:
+        return render_template("error.html", message="You are not Logged In")
+                    
+
 
 @app.route('/rgstr')
 def rgstr_user():

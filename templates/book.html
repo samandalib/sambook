@@ -14,16 +14,18 @@ book
         <p style = "font-size:18px; color:gray"><strong>{{user}}</strong> </p>
       </div>
 
-      <div class= "col-lg-6">
+      <div class= "col-lg-8">
       </div>
 
-      <div class= "col-lg-3 col-sm-3">
+      <div class= "col-lg-1 col-sm-3">
         <a style="font-size: 18px; align: right " href="{{url_for('logout')}}">Log Out</a>
       </div>
 
     </div>
   </div>
 </div>
+
+<h4 style="margin-left:10px;">Information for this book:</h4>
 <!--=======================================================================================================-->
   <ul>
     <li><strong>ISBN</strong>: {{book.isbn}}</li>
@@ -31,5 +33,143 @@ book
     <li><strong>Author</strong>: {{book.author}}</li>
     <li><strong>Year</strong>: {{book.year}}</li>
   </ul>
-  
+<!--=======================================================================================================-->
+{% if user_review == 1 %}
+    {% for review in reviews %}
+        {% if user in (review.username) %}
+            <h4 style="margin-left:10px;">Your Review for this Book:</h4>
+
+            <div class="row" style = "margin-bottom: 10px; border:1px; margin-top:10px;">
+
+                <div class= "col-lg-1"></div>
+
+                <div class="col-lg-1">
+                  <img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
+                  <div class="review-block-name">{{review.username}}</div>
+                </div>
+
+                <div class= "col-lg-1">
+                    {% for n in range(review.rating) %}
+                      <span class="review-star review-star-active">★</span>
+                    {% endfor %}
+                </div>
+
+                <div class= "col-lg-3">
+                  <div class="review-block-description">{{review.comment}}</div>
+                </div>
+
+                <div class= "col-lg-2"></div>
+            </div>
+            {% endif %}
+        {% endfor %}
+            <h4 style="margin-left:10px;">Other Reviews for this Book:</h4>
+            {% for review in reviews %}
+                {% if user not in (review.username) %}
+                <div class="row" style = "margin-bottom: 10px; border:1px; margin-top:10px;">
+
+                  <div class= "col-lg-1"></div>
+
+                  <div class="col-lg-1">
+                    <img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
+                    <div class="review-block-name">{{review.username}}</div>
+                  </div>
+
+                  <div class= "col-lg-1">
+                      {% for n in range(review.rating) %}
+                        <span class="review-star review-star-active">★</span>
+                      {% endfor %}
+                  </div>
+
+                  <div class= "col-lg-3">
+                    <div class="review-block-description">{{review.comment}}</div>
+                  </div>
+
+                  <div class= "col-lg-2"></div>
+                </div>
+                {% endif %}
+            {% endfor %}
+
+{% else %}
+    <form action="{{url_for('book', book_id=book.book_id)}}" method='POST' style="margin-bottom:5%; margin-top:5%;">
+      <div class="container-fluid">
+        <div class="grid">
+
+          <div class="row">
+            <!--<div class= "col-lg-1"></div>-->
+
+              <div class= "col-lg-6 col-sm-12">
+                <div class="form-group">
+                  <label class="form_field" for="rating"> Rate for the Book:  </label>
+                  <!--<input type="number" name= "rating"  class="form-control" placeholder="rate from 1 to 5">-->
+
+                  <select class="form-control" name="rating">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
+                </div>
+
+                <div class= "col-lg-5"></div>
+
+              </div>
+            </div>
+
+          <div class="row">
+
+            <!--<div class= "col-lg-1"></div>-->
+
+              <div class= "col-lg-6 col-sm-12">
+                <div class="form-group">
+                  <label for="exampleInput">Comment</label>
+                  <input type="text" name= "comment"  class="form-control" placeholder="Comment on this book">
+                </div>
+              </div>
+
+              <div class= "col-lg-5"></div>
+
+          </div>
+
+          <div class="row">
+            <!--<div class= "col-lg-1"></div>-->
+
+              <div class= "col-lg-3 col-sm-6">
+                  <button name="submit" style="margin-left:15px;" type="submit" class="btn btn-primary" value="submit">submit</button>
+              </div>
+
+              <div class= "col-lg-5"></div>
+          </div>
+
+        </div>
+      </div>
+    </form>
+
+    <h4 style="margin-left:10px;">Reviews for this Book:</h4>
+
+    {% for review in reviews %}
+    <div class="row" style = "margin-bottom: 10px; border:1px; margin-top:10px;">
+
+    <div class= "col-lg-1"></div>
+
+    <div class="col-lg-1">
+    <img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
+    <div class="review-block-name">{{review.username}}</div>
+    </div>
+
+    <div class= "col-lg-1">
+      {% for n in range(review.rating) %}
+        <span class="review-star review-star-active">★</span>
+      {% endfor %}
+    </div>
+
+    <div class= "col-lg-3">
+    <div class="review-block-description">{{review.comment}}</div>
+    </div>
+
+    <div class= "col-lg-2"></div>
+    </div>
+    {% endfor %}
+{% endif %}
+
 {% endblock %}
