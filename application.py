@@ -5,6 +5,7 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import generate_password_hash, check_password_hash
+import requests
 
 app = Flask(__name__)
 
@@ -147,6 +148,13 @@ def book(book_id):
     '''
     book = db.execute("SELECT * FROM books WHERE book_id = :id",{"id":book_id}).fetchone()
     
+    #Getting Information from GOODREADS APP
+    isbns= book.isbn
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "GVcJEgSaqKprmmVYSbmg", "isbns": isbns})
+    GR_avg_rtng = res.json()['books'][0]['average_rating']
+    GR_rtng_count = res.json()['books'][0]['ratings_count']
+    # =============================================
+    
     reviews = db.execute("SELECT * FROM activity LEFT JOIN readers ON activity.reader_id=readers.reader_id WHERE book_id = :book_id LIMIT 5",{'book_id':book_id}).fetchall()
 
     if 'user' in session:
@@ -172,15 +180,30 @@ def book(book_id):
                     db.commit()
                     return render_template('suc_rvw.html', user = username, rating = rating, comment = comment)
                 except:
-                    return render_template("error.html", message="Your request cannot be handled", username = username, comment = comment, rating = rating, reader_id= reader_id, book_id= book_id)
+                    return render_template("error.html", message="Your request cannot be handled", username = username, comment = comment, rating = rating, reader_id= reader_id, book_id= book_id )
                     
-        return render_template('book.html', book = book, user = username, reviews = reviews, user_review = user_review)                
+        return render_template('book.html', book = book, user = username, reviews = reviews, user_review = user_review,GR_avg_rtng=GR_avg_rtng, GR_rtng_count=GR_rtng_count)                
    
     else:
         return render_template("error.html", message="You are not Logged In")
                     
-
-
+@app.route('/api/<int:isbn>')
+def json(isbn):
+    '''
+    This function allows any person enter an isbn at the end of the /api/ route and get information about the book with that isbn (if any exists) or get a 404 error if there is no finding with that number
+    '''
+    try:
+        book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn":str(isbn)}).fetchone()
+        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "GVcJEgSaqKprmmVYSbmg", "isbns": isbn})
+        title = book.title
+        author = book.author
+        year = book.year
+        review_count = res.json()['books'][0]['reviews_count']
+        average_score = res.json()['books'][0]['average_rating']
+        return render_template('apiisbn.html', isbn = isbn, title = title, author = author, year = year, review_count=review_count, average_score= average_score)
+    except:
+         return render_template('error404.html')
+    
 @app.route('/rgstr')
 def rgstr_user():
         return render_template('rgstr.html')

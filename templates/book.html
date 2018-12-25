@@ -34,6 +34,14 @@ book
     <li><strong>Year</strong>: {{book.year}}</li>
   </ul>
 <!--=======================================================================================================-->
+<h4 style="margin-left:10px;">This book on Goodreads.com:</h4>
+<!--=======================================================================================================-->
+  <ul>
+    <li><strong>Average Rating</strong>: {{GR_avg_rtng}}</li>
+    <li><strong>Number of Rating</strong>: {{GR_rtng_count}}</li>
+  </ul>
+<!--=======================================================================================================-->
+
 {% if user_review == 1 %}
     {% for review in reviews %}
         {% if user in (review.username) %}
