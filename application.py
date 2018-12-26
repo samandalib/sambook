@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session,render_template, request, redirect, url_for
+from flask import Flask, session,render_template, request, redirect, url_for, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -195,14 +195,23 @@ def json(isbn):
     try:
         book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn":str(isbn)}).fetchone()
         res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "GVcJEgSaqKprmmVYSbmg", "isbns": isbn})
-        title = book.title
-        author = book.author
-        year = book.year
+#        title = book.title
+#        author = book.author
+#        year = book.year
         review_count = res.json()['books'][0]['reviews_count']
         average_score = res.json()['books'][0]['average_rating']
-        return render_template('apiisbn.html', isbn = isbn, title = title, author = author, year = year, review_count=review_count, average_score= average_score)
+        return jsonify({
+                'isbn':isbn,
+                'title':book.title,
+                'author':book.author,
+                'year':book.year,
+                'review_count': review_count,
+                'average_score': average_score
+                })
+#        return render_template('apiisbn.html', isbn = isbn, title = title, author = author, year = year, review_count=review_count, average_score= average_score)
     except:
-         return render_template('error404.html')
+        return jsonify({'error':'could not find any result for the entry'}), 404
+#         return render_template('error404.html')
     
 @app.route('/rgstr')
 def rgstr_user():
